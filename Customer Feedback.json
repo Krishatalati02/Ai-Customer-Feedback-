@@ -1,0 +1,664 @@
+{
+  "name": "Customer Feedback",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Feedback Form",
+        "formDescription": "Give Us Your Feedback!!!",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "placeholder": "Enter Your FullName ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "E-mail",
+              "fieldType": "email",
+              "placeholder": "Enter Your Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Contact",
+              "fieldType": "number"
+            },
+            {
+              "fieldLabel": "Feedback",
+              "placeholder": "Write Your Feedback",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -336,
+        -208
+      ],
+      "id": "78272c5a-c601-4618-9ffc-a1cd5ee0d381",
+      "name": "On form submission",
+      "webhookId": "24d5d5cd-ba50-4ae9-8f8e-f985d4c1cfd5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your role is to determine whether the feedback filled bu the customer is a complain,compliment or feature addition request.\n\nYour Feedback is this :{{ $json.Feedback }}\nYou have to give the output from below words only :\nComplain\nCompliment\nFeature Addition \n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -112,
+        -80
+      ],
+      "id": "53b1296b-1980-402e-9a24-9f7c063ee1f4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        240,
+        -208
+      ],
+      "id": "3c8f1819-6990-47ff-9ddb-2fd8aa3086c1",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Complain",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f8e26a5a-c2fd-4e4f-b263-fcaab2405d44"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "57499f98-1e07-4007-8de8-82defe6e880d",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Compliment",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "984c9635-dfcb-4826-b944-f95b0292e1c5",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Feature Addition",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        -224
+      ],
+      "id": "5eed807f-8d3c-4a77-a25c-f70d697ed4e6",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1PPQ-eR4GLQKh2gZ-lH_fsbgPwpTbxKvzvm0qZQcdIM0",
+          "mode": "list",
+          "cachedResultName": "Customer Feedback",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PPQ-eR4GLQKh2gZ-lH_fsbgPwpTbxKvzvm0qZQcdIM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Complain",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PPQ-eR4GLQKh2gZ-lH_fsbgPwpTbxKvzvm0qZQcdIM0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('On form submission').item.json['Full Name'] }}",
+            "Email": "={{ $('On form submission').item.json['E-mail'] }}",
+            "Contact No": "={{ $('On form submission').item.json.Contact }}",
+            "Feedback": "={{ $('On form submission').item.json.Feedback }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact No",
+              "displayName": "Contact No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        -400
+      ],
+      "id": "d721fd52-a1e8-408a-bd42-d8df5af6e06f",
+      "name": "Complain",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Qog3FlIhEdHFJRvU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1PPQ-eR4GLQKh2gZ-lH_fsbgPwpTbxKvzvm0qZQcdIM0",
+          "mode": "list",
+          "cachedResultName": "Customer Feedback",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PPQ-eR4GLQKh2gZ-lH_fsbgPwpTbxKvzvm0qZQcdIM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 952617898,
+          "mode": "list",
+          "cachedResultName": "Compliment",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PPQ-eR4GLQKh2gZ-lH_fsbgPwpTbxKvzvm0qZQcdIM0/edit#gid=952617898"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('On form submission').item.json['Full Name'] }}",
+            "Email": "={{ $('On form submission').item.json['E-mail'] }}",
+            "Contact No": "={{ $('On form submission').item.json.Contact }}",
+            "Feedback": "={{ $('On form submission').item.json.Feedback }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact No",
+              "displayName": "Contact No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        -208
+      ],
+      "id": "78ffbcd4-2abf-461f-bba0-ea464a342893",
+      "name": "Compliment",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Qog3FlIhEdHFJRvU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1PPQ-eR4GLQKh2gZ-lH_fsbgPwpTbxKvzvm0qZQcdIM0",
+          "mode": "list",
+          "cachedResultName": "Customer Feedback",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PPQ-eR4GLQKh2gZ-lH_fsbgPwpTbxKvzvm0qZQcdIM0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 964532693,
+          "mode": "list",
+          "cachedResultName": "Feature Addition",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1PPQ-eR4GLQKh2gZ-lH_fsbgPwpTbxKvzvm0qZQcdIM0/edit#gid=964532693"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('On form submission').item.json['Full Name'] }}",
+            "Email": "={{ $('On form submission').item.json['E-mail'] }}",
+            "Contact No": "={{ $('On form submission').item.json.Contact }}",
+            "Feedback": "={{ $('On form submission').item.json.Feedback }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact No",
+              "displayName": "Contact No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        -16
+      ],
+      "id": "a704eff1-fbd9-4a60-983a-44c6b0476571",
+      "name": "Feature Addition",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Qog3FlIhEdHFJRvU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1527681680368865391",
+          "mode": "list",
+          "cachedResultName": "Kuki💖's server",
+          "cachedResultUrl": "https://discord.com/channels/1527681680368865391"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1527683168658784416",
+          "mode": "list",
+          "cachedResultName": "complain",
+          "cachedResultUrl": "https://discord.com/channels/1527681680368865391/1527683168658784416"
+        },
+        "content": "={{ $('On form submission').item.json['E-mail'] }}\n\n{{ $('On form submission').item.json.Feedback }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        912,
+        -400
+      ],
+      "id": "61ead6fe-47da-44d4-b2d6-6f4918ba0363",
+      "name": "Send a message",
+      "webhookId": "a279d3b7-1543-4bfa-999c-5218d2e02fd8",
+      "credentials": {
+        "discordBotApi": {
+          "id": "YmATJuK2ASKReEIq",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        144
+      ],
+      "id": "d0cc79c6-08e7-4dab-93e3-b5c459ad5ad0",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "0fAQoxAfN8bsuMkM",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "1527681680368865391",
+          "mode": "list",
+          "cachedResultName": "Kuki💖's server",
+          "cachedResultUrl": "https://discord.com/channels/1527681680368865391"
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1527683168658784416",
+          "mode": "list",
+          "cachedResultName": "complain",
+          "cachedResultUrl": "https://discord.com/channels/1527681680368865391/1527683168658784416"
+        },
+        "content": "={{ $('On form submission').item.json['E-mail'] }}\n\n{{ $('On form submission').item.json.Feedback }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        912,
+        -16
+      ],
+      "id": "10a9158a-0fbb-4c72-8ed2-d4fc688fc524",
+      "name": "Send a message1",
+      "webhookId": "a279d3b7-1543-4bfa-999c-5218d2e02fd8",
+      "credentials": {
+        "discordBotApi": {
+          "id": "YmATJuK2ASKReEIq",
+          "name": "Discord Bot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json['E-mail'] }}",
+        "subject": "Regarding your Feedback",
+        "emailType": "text",
+        "message": "Hey ,Received Your feedback .We are looking forward to look into your feedback and work our best on it .Thank you for your time  ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        -400
+      ],
+      "id": "b852c0e3-6a50-4a84-988f-f96e0412f4c8",
+      "name": "Send a message2",
+      "webhookId": "fdfa7430-dd0f-4ad3-8ac0-ae8f26a9edc5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "VVbo6MvOlFnNKf95",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Complain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Compliment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Feature Addition",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compliment": {
+      "main": [
+        []
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feature Addition": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "19101926-be77-4b33-943b-023b82a1b7a2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ed71eff9cfb08fe3b83ee13cfa5ae9172238a76e2fbf5e302df9e3baebbe02b"
+  },
+  "nodeGroups": [],
+  "id": "Cr19r9JcoNS7tFK6",
+  "tags": []
+}
